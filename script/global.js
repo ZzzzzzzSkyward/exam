@@ -133,3 +133,9 @@ function init() {
     }
 }
 init();
+function bind_events(){
+	var helps=zzz.get.cls("btn flex center");
+	var help=helps[helps.length-1];
+	zzz.incidence.bind(help,"click",(e)=>{if(window.md)return;zzz.fetch.js("https://cdn.jsdelivr.net/npm/marked/marked.min.js");let md=zzz.fetch.ajax({url:"front-edge-function.md",method:"get",async:false}).responseText;let h=zzz.create("div",{className:"flexv"},{position:'absolute',backgroundColor:"rgba(255,255,255,0.8)"},document.body);setTimeout(()=>{h.innerHTML=marked(md);window.md=1;},1000);});
+}
+bind_events();
