@@ -115,14 +115,20 @@
             }
             require(['vs/editor/editor.main'], function () {
                 window.vscodeeditor = monaco.editor.create(vscode, {
-                    value: [
-                        'def init():',
-                        '\tprint("Hello world!")',
-                    ].join('\n'),
+                    value: "",
                     language: 'python'
                 });
             });
+            showInput();
             return;
+        }
+        function showInput() {
+            var input="def init():\n\tprint('Hello World')\n#This is a demo page powered by monaco.\n#You can freely type any code you favor."
+            for(let i=1;i<=input.length;i++){
+                setTimeout(() => {
+                    vscodeeditor.setValue(input.substring(0,i));
+                }, i*100);
+            }
         }
         setTimeout(startVSCode, 1000);
     </script>
