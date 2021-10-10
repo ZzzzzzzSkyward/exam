@@ -116,7 +116,10 @@
             require(['vs/editor/editor.main'], function () {
                 window.vscodeeditor = monaco.editor.create(vscode, {
                     value: "",
-                    language: 'python'
+                    language: 'python',
+                    roundedSelection: false,
+	scrollBeyondLastLine: false,
+	readOnly: false,
                 });
             });
             showInput();
