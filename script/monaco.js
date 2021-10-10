@@ -43,7 +43,7 @@ function startBrython() {
         console.out = function () {
             var t = "";
             for (let i of arguments) t += i;
-            vscodeConsole.setValue(t);
+            vscodeConsole.setValue(vscodeConsole.getValue()+t);
         }
         __BRYTHON__.stdout.out="out";
         zzz.incidence.bind(zzz.get.cls("answer")[0].firstElementChild, "dblclick", (e) => {
