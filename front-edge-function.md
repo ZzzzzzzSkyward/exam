@@ -92,3 +92,148 @@
 2. 否则，如果H5+CSS3+ES6提供了API，就用它
 3. 否则，如果ES6能够实现该功能，就自己写一个函数
 4. 否则，需要借助其他手段解决问题
+
+
+
+# 需求的实现
+
+- [ ] 单项选择题
+
+```javascript
+question={
+    title:"",
+    content:null,
+    choice:["A","B","C","D"],
+    answer:0
+}
+choice={
+    contentType:"text"|"latex"|"image"|"HTMLElement"
+    content:""
+}
+puzzle={
+    className:"",
+    question:{},
+    id:"",
+    student_choice:-1    
+}
+```
+
+- [ ] 填空题
+
+```javascript
+question={
+    title:"",
+    content:null,
+    answer:""
+}
+puzzle.student_answer=""
+```
+
+
+
+- [ ] 文件题
+
+```javascript
+question={
+	title:"",
+    content:{
+        timeLimit:"",
+        memoryLimit:"",
+        description:""
+    },
+    hint:"",
+    sampleInput:"",
+    sampleOutput:"",
+    codeArea:<HTMLElement>
+}
+```
+
+- [ ] 自动判分与人工判分
+
+```javascript
+score={
+    type:"match"|"RegExp"|"function",
+    scoringMethod:function(studentAnswer,answer,type,func){},
+    string:"",
+    regexp:"",
+    func:null
+}
+```
+- [ ] 管理题目
+
+```javascript
+function add(){}
+function del(){}
+function modify(){}
+function query(){}
+function importFromExcel(){}
+function exportToExcel(){}
+```
+
+- [ ] 管理试卷
+
+```javascript
+exam={
+    title:"",
+    content:[
+        questions
+    ],
+    time:{
+        start:0,
+        stop:0,
+        duration:0
+    }
+}
+function add(){}
+function del(){}
+function modify(){}
+function query(){}
+function importFromExcel(){}
+function exportToExcel(){}
+```
+
+
+
+- [ ] 管理学生
+
+```javascript
+function add(){}
+function del(){}
+function modify(){}
+function query(){}
+function importFromExcel(){}
+function exportToExcel(){}
+```
+
+
+
+- [ ] 管理老师
+
+```javascript
+function add(){}
+function del(){}
+function modify(){}
+function query(){}
+function importFromExcel(){}
+function exportToExcel(){}
+```
+
+
+
+- [ ] 权限系统
+
+```javascript
+function grant(){}
+function revoke(){}
+function login(){}
+function logout(){}
+function getToken(){}//像树洞一样用于长期维持登录状态
+```
+
+
+
+# 高级需求（选做）
+
+- [ ] 代码高亮
+- [ ] 自动补全
+- [ ] 连接本地服务器，或远程服务器debug

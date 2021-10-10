@@ -34,6 +34,26 @@ function startMonaco(input, parent, id, options) {
     return v;
 }
 
+function startBrython() {
+    require(["https://cdn.jsdelivr.net/npm/brython@3.10.0/brython.min.js", "https://cdn.jsdelivr.net/npm/brython@3.10.0/brython_stdlib.js"], function () {
+        zzz.create("script", {
+            id: "runner",
+            type: "text/python"
+        }, null, document.body);
+        console.out = function () {
+            var t = "";
+            for (let i of arguments) t += i;
+            vscodeConsole.setValue(t);
+        }
+        __BRYTHON__.stdout.out="out";
+        zzz.incidence.bind(zzz.get.cls("answer")[0].firstElementChild, "dblclick", (e) => {
+            zzz.get.id("runner").innerHTML = vscode.getValue();
+            brython({
+                debug: 1
+            });
+        });
+    });
+}
 require.config({
     paths: {
         'vs': 'script/monaco/min/vs'
@@ -49,4 +69,5 @@ require(["vs/loader"], function () {
             enabled: false
         }
     });
+    startBrython();
 });
