@@ -111,6 +111,7 @@ a:visited {
 }
 
 #main {
+    --pku-red:rgba(255,255,255,0.5);
     position: absolute;
     display: block;
     top: 0;
@@ -119,6 +120,10 @@ a:visited {
     left: 0;
     font-family: title;
     color: black;
+    background-blend-mode:luminousity;
+    background-color:rgba(255,255,255,0.8);
+    background-image:url(images/circuit-borad.svg);
+    background-size:50vw;
 }
 
 #head {
@@ -170,10 +175,11 @@ a:visited {
     background-color: rgba(0, 0, 0, 0);
     /*linear-gradient(0deg, rgba(255, 0, 0, .8), rgba(255, 0, 0, 0) 100%);*/
     /*linear-gradient(0deg, rgba(255, 74, 50, 0.8), rgba(255, 0, 0, 0) 70.71%);*/
-    background-image:radial-gradient(circle, #00000091 0%, #0000004a 20%,transparent);
+    /*background-image:radial-gradient(circle, #00000091 0%, #0000004a 20%,transparent);*/
+    backdrop-filter:blur(5px);
     background-repeat:no-repeat;
     background-size:100px 100px;
-    background-blend-mode:
+    background-blend-mode:lighten;
     min-width: 3em;
     transition: all 0.2s ease-out;
     text-align: center;
