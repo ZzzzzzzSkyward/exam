@@ -170,13 +170,17 @@ function init() {
         }) + '</div>', {
             position: "absolute",
             left: 0,
-            top: zzz.get.style(zzz.get.id("head"), "height"),
+            top: zzz.get.style(zzz.get.id("head") || document.body, "height"),
             width: zzz.get.style(title, "width"),
             backgroundColor: "rgba(0,0,0,0.4)",
             color: "white",
             height: "max-content"
         }, zzz.get("#main"));
-    bind_events();
+    createInfoPanel();
+    bindInfoPanel(zzz.get.id("main"));
+    try {
+        bind_events();
+    } catch (e) {}
 }
 setTimeout(init, 1000);
 
@@ -202,4 +206,60 @@ function bind_events() {
             window.md = 1;
         }, 1000);
     });
+}
+
+function info(ele, e) {
+    if (!ele) {
+        zzz.set.style(ifp, "opacity", 0);
+        return;
+    }
+    let x = e.client[0];
+    let y = e.client[1];
+    zzz.anim.set(ifp, {
+        left: x,
+        opacity: 1,
+        top: y
+    });
+    ifp.showInfo(ele.tagName);
+}
+
+function createInfoPanel() {
+    window.ifp = zzz.create("div", {
+        id: "infopanel",
+        className: "infopanel fasttrans flexv"
+    }, {
+        fontSize: "1em",
+        backgroundColor: "rgba(255,255,255,0.5)",
+        borderRadius: "0.1em",
+        boxShadow: "0 0 5px 5px rgba(50,50,50,0.4)",
+        position: "absolute",
+        minWidth: "10px",
+        minHeight: "10px",
+        left: "-10px",
+        top: "-10px"
+    }, document.body);
+    ifp.showInfo = function () {
+        let a = arguments.length;
+        for (let i of ifp.children) ifp.removeChild(i);
+        for (let i = 0; i < a; i++) {
+            zzz.create("div", {
+                innerHTML: arguments[i]
+            }, null, ifp);
+        }
+    }
+}
+
+function bindInfoPanel(ele) {
+    for (let i of ele.children) {
+        if (i.children.length) {
+            bindInfoPanel(i);
+        }// else {
+            zzz.incidence.bind(i, "mouseenter", function (e) {
+                info(e.target, zzz.incidence.interpret(e));
+            });
+            zzz.incidence.bind(i, "mouseleave", function (e) {
+                info();
+            });
+        //}
+    }
 }
