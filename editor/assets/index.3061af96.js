@@ -1,0 +1,38 @@
+var w=Object.defineProperty;var h=Object.getOwnPropertySymbols;var b=Object.prototype.hasOwnProperty,k=Object.prototype.propertyIsEnumerable;var g=(e,t,i)=>t in e?w(e,t,{enumerable:!0,configurable:!0,writable:!0,value:i}):e[t]=i,f=(e,t)=>{for(var i in t||(t={}))b.call(t,i)&&g(e,i,t[i]);if(h)for(var i of h(t))k.call(t,i)&&g(e,i,t[i]);return e};import{d as p,V as M,E as S,e as m,a as $,n as z,c as A,h as x,i as V,s as E,m as j,b as O,t as B,f as T,g as H,l as U,j as q,u as C,r as I,k as K,o as P,p as D,q as c,v as R,w as y,x as _,y as F}from"./vendor.2b3cc9d9.js";const Q=function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const o of document.querySelectorAll('link[rel="modulepreload"]'))s(o);new MutationObserver(o=>{for(const n of o)if(n.type==="childList")for(const r of n.addedNodes)r.tagName==="LINK"&&r.rel==="modulepreload"&&s(r)}).observe(document,{childList:!0,subtree:!0});function i(o){const n={};return o.integrity&&(n.integrity=o.integrity),o.referrerpolicy&&(n.referrerPolicy=o.referrerpolicy),o.crossorigin==="use-credentials"?n.credentials="include":o.crossorigin==="anonymous"?n.credentials="omit":n.credentials="same-origin",n}function s(o){if(o.ep)return;o.ep=!0;const n=i(o);fetch(o.href,n)}};Q();var v=(e,t)=>{for(const[i,s]of t)e[i]=s;return e};let W=`# Milkdown\u6307\u5357
+
+## \u652F\u6301Markdown\u8BED\u6CD5
+
+| Action | Key         |
+| :----- | :---------- |
+| \u5E38\u89C4\u6587\u672C   | Mod-Alt-0   |
+| H1     | Mod-Alt-1   |
+| H2     | Mod-Alt-2   |
+| H3     | Mod-Alt-3   |
+| H4     | Mod-Alt-4   |
+| H5     | Mod-Alt-5   |
+| H6     | Mod-Alt-6   |
+| \u4EE3\u7801\u5757    | Mod-Alt-c   |
+| \u5220\u9664\u6362\u884C   | Shift-Enter |
+
+## \u652F\u6301TeX\u8BED\u6CD5
+
+\`$\`\u4EE5\u53EC\u5524math\u63D2\u4EF6\uFF0C\u7531KaTeX\u6E32\u67D3\u3002
+
+\u8F93\u5165\`$pi\`\u5C31\u53EF\u4EE5\u5F97\u5230$pi$\u3002
+
+## \u5FEB\u6377\u952E
+
+\u8BF7\u53BB<https://milkdown.dev/#/zh-hans/keyboard-shortcuts>\u67E5\u770B\u3002
+
+## \u526A\u8D34\u677F
+
+\u53EF\u4EE5\u590D\u5236\u7C98\u8D34markdown\u8BED\u8A00\uFF0C\u5176\u4ED6\u4E0D\u884C\u3002
+
+## emoji~~\u{1F605}~~
+
+\u652F\u6301\u4E00\u4E9Bemoji\uFF0C\u8F93\u5165\`:\`\u4EE5\u9009\u62E9\uFF0C\u8F93\u5165\`:emoji:\`\u4EE5\u6253\u5F00\u9762\u677F\u3002`;const X=p({name:"Milkdown",components:{VueEditor:M},props:{text:{type:String,default:W},editable:{type:Boolean,default:!0}},setup(e){console.log(e);let t=S.make().config(o=>{o.set(m,{editable(){return e.editable}}),o.set($,e.text)}).use(z).use(A).use(x).use(V).use(E).use(j).use(O).use(B).use(T).use(H),i={markdown:[],doc:[console.log]};t.config(function(o){o.set(U,i)}).use(q);let s=C(o=>t.config(n=>{n.set(I,o)}));return f({editor:t,ls:i,editorf:s,listeners:[]},e)},mounted(){window.milkdown=this,this.ls.markdown.push(this.attention)},methods:{async md(){return this.editor.action(e=>{const t=e.get(K);return e.get(P)(t.state.doc)})},bind(e){this.listeners.push(e)},attention(e,t){if(t==="markdown"){this.markdown=e();for(let i of this.listeners)i(this.markdown)}else{this.data=e();for(let i of this.listeners)i(this.data)}},edit(e){arguments.length==0&&(e=this.editable),this.editor.config(t=>{t.set(m,{editable(){return e}})}),this.editable=!this.editable}}});function L(e,t,i,s,o,n){const r=D("VueEditor");return c(),R(r,{editor:e.editorf,ref:"ve"},null,8,["editor"])}var Z=v(X,[["render",L]]);function G(e,t){return new Promise((i,s)=>{let o=document.createElement("script");o.type=t?"module":"text/javascript",o.src=e,document.body.appendChild(o),o.onload=()=>{i()},o.onerror=()=>{s()}})}const J=p({name:"Monaco",components:{},props:{editable:{type:Boolean,default:!0},type:{type:String,default:"undefined"},diff:Boolean,content:String,language:{type:String,default:"html"},options:Object,size:String},setup:function(e){console.log(e.editable?"editable":"ineditable"),e.type==="undefined"&&(e.type=e.editable?"edit":"show");let t={editor:null,listeners:[],loading:!0,prevline:0,theme:"vs"},i=f(f({preview:!1,tab:!1,minimap:!1,lightbulb:!1,margin:!1},t),e);return e.type==="show"?i:f(f({beyond:!1,round:!1,number:!0,preview:!0,cursor:"line",tab:!0,tabText:"onlySnippets",margin:!0,minimap:!0,lightbulb:!0,font:"",size:"10px"},t),e)},methods:{lang(e){let t=this.editor.getModel();monaco.editor.setModelLanguage(t,e)},line(){return this.editor.getModel().getLineCount()},height(){return this.editor.getContentHeight()},sz(e){this.update({fontSize:e})},resize(e,t){e&&(this.$el.style.width=e),t&&(this.$el.style.height=t)},finish(){this.$el.classList.remove("loading"),this.loading=!1,window.milkdown.bind(this.text),this.listeners.push(()=>{let e=this.line();e!==this.prevline&&e>10&&e<100&&(this.resize(null,this.height()+"px"),this.prevline=e)})},bind(e,t){typeof e=="string"&&(e=[e]);for(let i of e){i=i.toLowerCase();let s=monaco.KeyMod;s.CtrlCmd,s.CtrlCmd,s.AltCmd,s.Shift,s.US_OPEN_SQUARE_BRACKET,s.US_EQUAL,s.US_MINUS}switch(t){case"unfoldAll":t="unfondRecursively";break}t="editor."+t,this.editor.addCommand(key,function(){editor.trigger("",t)})},update(e){this.editor.updateOptions(e)},size(e){this.update({fontSize:e})},edit(e){this.update({readOnly:!e})},text(e){if(e!==void 0)this.editor.setValue(e);else return this.editor.getValue()},getSelectionText(e,t,i,s,o){let n="",r=0,a=null,d=null;return t<s?e.getValue().split("").map((u,l)=>{t===1?(a=i-1,u===`
+`&&(r+=1,r===s-1&&(d=l+o))):u===`
+`&&(r+=1,r===t-1&&(a=l+i),r===s-1&&(d=l+o))}):t>s?e.getValue().split("").map((u,l)=>{s===1?(a=o-1,u===`
+`&&(r+=1,r===t-1&&(d=l+i))):u===`
+`&&(r+=1,r===s-1&&(a=l+o),r===t-1&&(d=l+i))}):t===s&&e.getValue().split("").map((u,l)=>{s===1?(a=i<o?i-1:o-1,d=i>o?i-1:o-1):u===`
+`&&(r+=1,r===s-1&&(a=i<o?i+l:o+l,d=i>o?i+l:o+l))}),n=e.getValue().slice(a,d),n},theme(e){e==="dark"?e="vs-dark":e==="light"&&(e="vs"),this.update({theme:e})},changed(e){console.log("monaco changed",e),this.attention()},attention(){let e=this.text();for(let t of this.listeners)t(e)},select(){arguments.length&&console.log("select returns selectedText without param.");let e=this.editor.getSelection();return this.getSelectionText(this.editor,e.startLineNumber,e.startColumn,e.endLineNumber,e.endColumn)},async install(){console.log(arguments,this),console.log("installing monaco."),await G("src/assets/require.js"),require.config({paths:{vs:"src/assets/vs"}});let e=this;require(["vs/editor/editor.main"],function(){e.generate()})},generate(){console.log(arguments,this);let e=this;this&&(this.editor=monaco.editor[e.diff?"createDiffEditor":"create"](this.$el,{value:e.content,language:e.language,roundedSelection:e.round,scrollBeyondLastLine:e.beyond,readOnly:!e.editable,automaticLayout:!0,autoClosingBrackets:!0,suggest:{preview:e.preview,shareSuggestSelections:!0},mouseWheelZoom:!0,tabCompletion:e.tab,lineNumbers:e.number,theme:e.theme,wordWrap:"on",foldingStrategy:"indentation",glyphMargin:e.margin,fontFamily:e.font,minimap:{enabled:e.minimap},lightbulb:{enabled:e.lightbulb},fontSize:e.size||"10px"})),window.editor=this,this.editor.onDidChangeModelContent(this.changed),this.finish()}},mounted:async function(){console.log(this);try{monaco}catch{await this.install()}},beforeDestroy(){this.editor&&this.editor.dispose()}}),Y=["language","type","options","diff","content","size"];function N(e,t,i,s,o,n){return c(),y("div",{class:"monaco-container loading",language:e.language,type:e.type,options:e.options,diff:e.diff,content:e.content,size:e.size},null,8,Y)}var ee=v(J,[["render",N]]);const te={class:"main"},ie={setup(e){return(t,i)=>(c(),y("div",te,[_(Z,{style:{padding:"3%"}}),_(ee,{language:"markdown",size:"20px"})]))}};F(ie).mount("#app");
