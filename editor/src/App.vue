@@ -3,13 +3,14 @@
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import Milkdown from "./components/Milkdown.vue";
 import Monaco from "./components/Monaco.vue";
+import TipTap from "./components/TipTap.vue";
 import "./assets/global.css";
 </script>
 
 <template>
   <div class="main">
-    <Milkdown style="padding:3%"></Milkdown>
-    <Monaco language="markdown" size="20px"></Monaco>
+    <TipTap style="padding:3%"></TipTap>
+    <Monaco language="markdown" size="20px" type="edit"></Monaco>
   </div>
 </template>
 

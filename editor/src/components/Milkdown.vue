@@ -17,13 +17,15 @@ import { VueEditor, useEditor } from "@milkdown/vue";
 import { commonmark } from "@milkdown/preset-commonmark";
 import { tooltip } from "@milkdown/plugin-tooltip";
 import { slash } from "@milkdown/plugin-slash";
+import { upload,uploadPlugin } from "@milkdown/plugin-upload";
+import { diagram } from "@milkdown/plugin-diagram";
 import { listener, listenerCtx } from "@milkdown/plugin-listener";
 import { history } from "@milkdown/plugin-history";
 import { math } from "@milkdown/plugin-math";
 import { emoji } from "@milkdown/plugin-emoji";
 import { clipboard } from "@milkdown/plugin-clipboard";
 import { indent } from "@milkdown/plugin-indent";
-//import { shiki } from 'milkdown-plugin-shiki';
+//import { shiki } from 'milkdown-plugin-shiki';//outdated plugin
 import "material-icons/iconfont/material-icons.css";
 import { gfm } from "@milkdown/preset-gfm";
 import "katex/dist/katex.min.css";
@@ -60,6 +62,42 @@ let tutorial =`# Milkdown指南
 ## emoji~~😅~~
 
 支持一些emoji，输入\`:\`以选择，输入\`:emoji:\`以打开面板。`;
+let fileHandler={
+  openImage(img){
+    //This is a blank function.
+    return "data:image/png;base64,"+window.btoa(img);
+  }
+};
+fileHandler.uploader= async (files, schema) => {
+    const images= [];
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files.item(i);
+        if (!file) {
+            continue;
+        }
+
+        // You can handle whatever the file type you want, we handle image here.
+        if (!file.type.includes('image')) {
+            continue;
+        }
+
+        images.push(file);
+    }
+
+    const nodes = await Promise.all(
+        images.map(async (image) => {
+            const src = await fileHandler.openImage(image);
+            const alt = image.name;
+            return schema.nodes.image.createAndFill({
+                src,
+                alt,
+            });
+        }),
+    );
+
+    return nodes;
+};
 export default defineComponent({
   name: "Milkdown",
   components: {
@@ -118,6 +156,10 @@ export default defineComponent({
       .use(emoji)
       .use(tooltip)
       .use(clipboard)
+      .use(upload.configure(uploadPlugin, {
+            uploader:fileHandler.uploader,
+        }))
+      .use(diagram)
       .use(gfm);
     let ls = {
       markdown: [],
