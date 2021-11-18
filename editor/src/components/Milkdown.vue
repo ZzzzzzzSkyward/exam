@@ -11,13 +11,14 @@ import {
   editorViewOptionsCtx,
   editorViewCtx,
   serializerCtx,
+  themeFactory,
 } from "@milkdown/core";
-import { nord } from "@milkdown/theme-nord";
+//import { nord } from "@milkdown/theme-nord";
 import { VueEditor, useEditor } from "@milkdown/vue";
 import { commonmark } from "@milkdown/preset-commonmark";
 import { tooltip } from "@milkdown/plugin-tooltip";
 import { slash } from "@milkdown/plugin-slash";
-import { upload,uploadPlugin } from "@milkdown/plugin-upload";
+import { upload, uploadPlugin } from "@milkdown/plugin-upload";
 import { diagram } from "@milkdown/plugin-diagram";
 import { listener, listenerCtx } from "@milkdown/plugin-listener";
 import { history } from "@milkdown/plugin-history";
@@ -25,11 +26,14 @@ import { math } from "@milkdown/plugin-math";
 import { emoji } from "@milkdown/plugin-emoji";
 import { clipboard } from "@milkdown/plugin-clipboard";
 import { indent } from "@milkdown/plugin-indent";
+import { Doc } from "yjs";
 //import { shiki } from 'milkdown-plugin-shiki';//outdated plugin
 import "material-icons/iconfont/material-icons.css";
+//import { collaborative,y } from "@milkdown/plugin-collaborative";
 import { gfm } from "@milkdown/preset-gfm";
 import "katex/dist/katex.min.css";
-let tutorial =`# Milkdown指南
+import { slots } from "../assets/slots.js";
+let tutorial = `# Milkdown指南
 
 ## 支持Markdown语法
 
@@ -61,42 +65,60 @@ let tutorial =`# Milkdown指南
 
 ## emoji~~😅~~
 
-支持一些emoji，输入\`:\`以选择，输入\`:emoji:\`以打开面板。`;
-let fileHandler={
-  openImage(img){
+支持一些emoji，输入\`:\`以选择，输入\`:emoji:\`以打开面板。
+
+## 图表
+
+输入\` \`\`\`mermaid \`以打开
+
+\`\`\`mermaid
+pie
+    title Top 5 Languages
+    "Python" : 20
+    "Java" : 20
+    "C" : 20
+    "C++" :  20
+	"Javascript":10
+\`\`\`
+
+访问<https://mermaid-js.github.io/mermaid/#/>查看。
+
+`;
+let fileHandler = {
+  openImage(img) {
     //This is a blank function.
-    return "data:image/png;base64,"+window.btoa(img);
-  }
+    return "data:image/png;base64," + window.btoa(img);
+  },
 };
-fileHandler.uploader= async (files, schema) => {
-    const images= [];
+fileHandler.uploader = async (files, schema) => {
+  const images = [];
 
-    for (let i = 0; i < files.length; i++) {
-        const file = files.item(i);
-        if (!file) {
-            continue;
-        }
-
-        // You can handle whatever the file type you want, we handle image here.
-        if (!file.type.includes('image')) {
-            continue;
-        }
-
-        images.push(file);
+  for (let i = 0; i < files.length; i++) {
+    const file = files.item(i);
+    if (!file) {
+      continue;
     }
 
-    const nodes = await Promise.all(
-        images.map(async (image) => {
-            const src = await fileHandler.openImage(image);
-            const alt = image.name;
-            return schema.nodes.image.createAndFill({
-                src,
-                alt,
-            });
-        }),
-    );
+    // You can handle whatever the file type you want, we handle image here.
+    if (!file.type.includes("image")) {
+      continue;
+    }
 
-    return nodes;
+    images.push(file);
+  }
+
+  const nodes = await Promise.all(
+    images.map(async (image) => {
+      const src = await fileHandler.openImage(image);
+      const alt = image.name;
+      return schema.nodes.image.createAndFill({
+        src,
+        alt,
+      });
+    })
+  );
+
+  return nodes;
 };
 export default defineComponent({
   name: "Milkdown",
@@ -106,6 +128,7 @@ export default defineComponent({
   props: {
     text: { type: String, default: tutorial },
     editable: { type: Boolean, default: true },
+    doc: Doc,
   },
   setup(props) {
     console.log(props);
@@ -118,8 +141,13 @@ export default defineComponent({
         });
         ctx.set(defaultValueCtx, props.text);
       })
-      .use(nord)
-      .use(commonmark)
+      .use(
+        themeFactory({
+          slots,
+        })
+      )
+      .use(gfm)
+      .use(commonmark.headless())
       //   .use(listener)
       //.use(        shiki({       theme:"material-default"        }))
       /*
@@ -156,11 +184,12 @@ export default defineComponent({
       .use(emoji)
       .use(tooltip)
       .use(clipboard)
-      .use(upload.configure(uploadPlugin, {
-            uploader:fileHandler.uploader,
-        }))
-      .use(diagram)
-      .use(gfm);
+      .use(
+        upload.configure(uploadPlugin, {
+          uploader: fileHandler.uploader,
+        })
+      )
+      .use(diagram);
     let ls = {
       markdown: [],
       doc: [console.log],
@@ -186,7 +215,14 @@ export default defineComponent({
   mounted() {
     window.milkdown = this;
     this.ls.markdown.push(this.attention);
+    if (this.doc) {
+      let that = this;
+      this.bind(function (data) {
+        that.$emit("change", data);
+      });
+    }
   },
+  emits: ["change"],
   methods: {
     async md() {
       return this.editor.action((ctx) => {
@@ -233,52 +269,59 @@ export default defineComponent({
   --shadow: rgba(var(--shadowc), var(--shadowo));
   --color: #282828;
   --bgcolor: rgba(var(--bgc), var(--opacity));
-  --code-bgc:rgba(220,220,245,0.3);
+  --code-bgc: rgba(220, 220, 245, 0.8);
   font-family: "Roboto", "Helvetica", "Roboto", "HelveticaNeue-Light",
     "Helvetica Neue Light", "Helvetica Neue", "Helvetica", "Arial", "Lucida Grande",
     "sans-serif";
   --radius: 0px;
-
-  --primary: 100,150,220;
-  --secondary: 185,196,96;
-  --neutral: 150,150,150;
-  --background: 240,240,240;
+  --surface :84, 163, 234;
+  --primary: 100, 150, 220;
+  --secondary: 185, 196, 96;
+  --neutral: 150, 150, 150;
+  --background: 240, 240, 240;
 }
 .editor .code-fence {
-  background-color:var(--code-bgc);
+  background-color: var(--code-bgc);
 }
-.editor input,.tooltip-input input{
-  height:100%;
+.editor input,
+.tooltip-input input {
+  height: 100%;
 }
-.milkdown input:focus,.tooltip-input input:focus{
-  background-color:transparent;
-  background:transparent;
+.milkdown input:focus,
+.tooltip-input input:focus {
+  background-color: transparent;
+  background: transparent;
 }
 .editor label {
-  margin:0;
-  margin-top:0.1em;
-  margin-bottom:0.1em;
+  margin: 0;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
 }
-.editor ul.bullet-list{
-  margin:0;
+.editor ul.bullet-list {
+  margin: 0;
 }
-.editor .code-inline{
-  background-color:var(--code-bgc);
-  filter:invert(1);
+.editor .code-inline {
+  background-color: var(--code-bgc);
+  vertical-align: middle;
+  filter: invert(1);
+  padding: .1em;
+  padding-left: 0.2em;
+  padding-right: .2em;
+  border-radius: 0.2em;
 }
-.editor .blockquote,blockquote{
-	padding-left: 2em;
-	border-left: 4px solid rgba(var(--primary), 1);
+.editor .blockquote,
+blockquote {
+  padding-left: 2em;
+  border-left: 4px solid rgba(var(--primary), 1);
 }
 .milkdown .editor {
-  background-color: var(--bgcolor);
-  box-shadow: 0 0 2px var(--shadow);
+  background-color: transparent;
+  /*box-shadow: 0 0 2px var(--shadow);*/
   border-radius: 0.1em;
   color: var(--color);
   padding-left: 1em;
   padding-right: 1em;
   padding-top: 0.1em;
-  line-height: 1em;
 }
 .editor .slash-dropdown-item {
   height: 1em;
@@ -291,20 +334,20 @@ export default defineComponent({
   --bgcolor: rgb(var(--bgc), var(--opacity));
 }
 ::selection {
-    background-color: rgba(0, 0, 0, 0.651)!important;
-    color: rgba(255, 255, 255, 0.925);
+  background-color: rgba(0, 0, 0, 0.651) !important;
+  color: rgba(255, 255, 255, 0.925);
 }
-.editor .code-fence_select-wrapper{
+.editor .code-fence_select-wrapper {
   opacity: 0;
-  transition:opacity var(--transition);
-  position:absolute;
-  right:0;
-  top:inherit;
+  transition: opacity var(--transition);
+  position: absolute;
+  right: 0;
+  top: inherit;
 }
-.editor .slash-dropdown{
-  transition:opacity var(--transition);
+.editor .slash-dropdown {
+  transition: opacity var(--transition);
 }
-.editor .code-fence:hover>.code-fence_select-wrapper{
+.editor .code-fence:hover > .code-fence_select-wrapper {
   opacity: 1;
 }
 .editor:focus {
@@ -323,50 +366,70 @@ export default defineComponent({
   /*filter: drop-shadow(0 0 3px var(--shadow));*/
 }
 .editor p.empty-node {
-  --neutral:150,150,150;
+  --neutral: 150, 150, 150;
 }
-.editor .code-fence>pre{
-  max-height:20em;
+.editor .code-fence > pre {
+  max-height: 20em;
 }
-h1,h2,h3,h4,h5,h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0.2em;
   padding: 0;
 }
-h1::before,h2::before,h3::before,h4::before,h5::before,h6::before {
-	content: var(--level);
-	position: absolute;
-	opacity: 0;
-	left: -1em;
-	font-size: 1rem;
-	border: 1px solid black;
-	height: 1em;
-	text-align: center;
-	line-height: 1em;
-	padding: 0.1em;
-	background-color: black;
-	color: white;
-	pointer-events: none;
+h1::before,
+h2::before,
+h3::before,
+h4::before,
+h5::before,
+h6::before {
+  content: var(--level);
+  position: absolute;
+  opacity: 0;
+  left: -1em;
+  font-size: 1rem;
+  border: 1px solid black;
+  height: 1em;
+  text-align: center;
+  line-height: 1em;
+  padding: 0.1em;
+  background-color: black;
+  color: white;
+  pointer-events: none;
 }
-h1:hover::before,h2:hover::before,h3:hover::before,h4:hover::before,h5:hover::before,h6:hover::before,
-h1:focus::before,h2:focus::before,h3:focus::before,h4:focus::before,h5:focus::before,h6:focus::before{
-  opacity:1;
+h1:hover::before,
+h2:hover::before,
+h3:hover::before,
+h4:hover::before,
+h5:hover::before,
+h6:hover::before,
+h1:focus::before,
+h2:focus::before,
+h3:focus::before,
+h4:focus::before,
+h5:focus::before,
+h6:focus::before {
+  opacity: 1;
 }
-h1{
-  --level:"h1";
+h1 {
+  --level: "h1";
 }
-h2{
-  --level:"h2";
+h2 {
+  --level: "h2";
 }
-h3{
-  --level:"h3";
+h3 {
+  --level: "h3";
 }
-h4{
-  --level:"h4";
+h4 {
+  --level: "h4";
 }
-h5{
-  --level:"h5";
+h5 {
+  --level: "h5";
 }
-h6{
-  --level:"h6";
+h6 {
+  --level: "h6";
 }
 </style>

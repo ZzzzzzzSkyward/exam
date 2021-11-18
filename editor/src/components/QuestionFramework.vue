@@ -1,24 +1,34 @@
 <template>
-  <div class="tiptap question-framwork" :id="id" ref="tp">
-    <div class="question-item  question-title">标题Title</div>
-    <div v-if="title" class="question-input question-input-title">
-      <editor-content :editor="title" />
+  <div class="tiptap question-framwork" ref="tp">
+    <div class="question-item">
+      <div class="question-title">标题Title</div>
+      <div v-if="title" class="question-input question-input-title">
+        <editor-content :editor="title" />
+      </div>
     </div>
-    <div class="question-item">题型Type</div>
-    <div v-if="type" class="question-input question-input-type">
-      <editor-content :editor="type" />
+    <div class="question-item">
+      <div class="question-title">标签Tag</div>
+      <div v-if="tags" class="question-input question-input-tag">
+        <editor-content :editor="tags" />
+      </div>
     </div>
-    <div class="question-item">标签Tag</div>
-    <div v-if="tag" class="question-input question-input-type">
-      <editor-content :editor="tag" />
+    <div class="question-item">
+      <div class="question-title">题型Type</div>
+      <div v-if="type" class="question-input question-input-type">
+        <editor-content :editor="type" />
+      </div>
     </div>
-    <div class="question-item">内容Content</div>
-    <div v-if="content" class="question-input question-input-content">
-      <Milkdown :text="content" />
+    <div class="question-item">
+      <div class="question-title">内容Content</div>
+      <div v-if="content" class="question-input question-input-content">
+        <Milkdown  @change="change" />
+      </div>
     </div>
-    <div class="question-item">输出Output</div>
-    <div class="output">
-      <code>{{ json }}</code>
+    <div class="question-item">
+      <div class="question-title">输出Output</div>
+      <div class="output">
+        <code>{{ json }}</code>
+      </div>
     </div>
   </div>
 </template>
@@ -35,7 +45,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import Collaboration from "@tiptap/extension-collaboration";
 import * as Y from "yjs";
 import { yDocToProsemirrorJSON } from "y-prosemirror";
-import  Milkdown  from "./Milkdown.vue";
+import Milkdown from "./Milkdown.vue";
 
 const ParagraphDocument = Document.extend({
   content: "paragraph",
@@ -50,10 +60,10 @@ const CustomTaskItem = TaskItem.extend({
 });
 
 export default defineComponent({
-    name:"TipTap",
+  name: "QuestionFramework",
   components: {
     EditorContent,
-    Milkdown
+    Milkdown,
   },
 
   data() {
@@ -76,10 +86,10 @@ export default defineComponent({
           field: "title",
         }),
       ],
-      content: "<p>No matter what you do, this will be a single paragraph.",
+      content: "<p>",
     });
 
-    this.type = new Editor({
+    this.tags = new Editor({
       extensions: [
         TaskListDocument,
         Paragraph,
@@ -88,19 +98,17 @@ export default defineComponent({
         CustomTaskItem,
         Collaboration.configure({
           document: this.ydoc,
-          field: "type",
+          field: "tags",
         }),
       ],
       content: `
         <ul data-type="taskList">
-          <li data-type="taskItem" data-checked="true">And this</li>
-          <li data-type="taskItem" data-checked="false">is a task list</li>
-          <li data-type="taskItem" data-checked="false">and only a task list.</li>
+          <li data-type="taskItem" data-checked="true">tags</li>
         </ul>
       `,
     });
 
-    /*this.content = new Editor({
+    this.type = new Editor({
       extensions: [
         Document,
         Paragraph,
@@ -108,27 +116,46 @@ export default defineComponent({
         Bold,
         Collaboration.configure({
           document: this.ydoc,
-          field: "content",
+          field: "type",
         }),
       ],
       content: `
-        <p>
-          <strong>Lengthy text</strong>
-        </p>
-        <p>
-          This can be lengthy text.
-        </p>
+        <p>type=</p>
       `,
-    });*/
-    this.content="...";
+    });
+    this.content = "...";
   },
-
+  methods: {
+    change(data) {
+      this.content = data;
+    },
+    set(target, value) {
+      //json or html
+      /* {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Example Text"
+            }
+          ]
+        }
+      ]
+    }
+    */
+      this[target].setContent(value);
+    },
+  },
   computed: {
     json() {
       return {
         title: yDocToProsemirrorJSON(this.ydoc, "title"),
         type: yDocToProsemirrorJSON(this.ydoc, "type"),
-        content: yDocToProsemirrorJSON(this.ydoc, "content"),
+        tags: yDocToProsemirrorJSON(this.ydoc, "tags"),
+        content: { content: this.content, type: "content" },
       };
     },
   },
@@ -136,7 +163,7 @@ export default defineComponent({
   beforeUnmount() {
     this.title.destroy();
     this.type.destroy();
-    this.content.destroy();
+    this.tag.destroy();
     this.provider.destroy();
   },
 });
@@ -169,23 +196,25 @@ export default defineComponent({
   }
 }
 
-.question-item {
+.question-title {
   color: #868e96;
   text-transform: uppercase;
   font-weight: bold;
-  font-size: 0.7rem;
-  letter-spacing: 1px;
+  font-size: 1em;
+  letter-spacing: 0.1em;
 }
-
-.question-input {
+.question-input-title{
+  font-size: 2em;
+}
+.question-item {
   margin: 0 0 1rem;
-  padding: 0.75rem 1rem;
+  padding: 0 1rem;
   border-radius: 5px;
   border: 1px solid #e9ecef;
   transition: 0.1s all ease-in-out;
-
+  --hover-color: var(--pku-red);
   &:hover {
-    border-color: #68cef8;
+    border-color: var(--hover-color);
   }
 
   &--title {
@@ -198,7 +227,15 @@ export default defineComponent({
     font-size: 0.8rem;
   }
 }
-
+.question-item  p{
+  margin:0.1em;
+}
+.question-item div:focus-visible {
+  outline:transparent;
+}
+.question-item div:focus {
+  border-color:var(--hover-color);
+}
 pre {
   font-family: Monaco, monospace;
   padding: 0.75rem 1rem;

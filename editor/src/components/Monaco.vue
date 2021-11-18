@@ -284,13 +284,18 @@ export default defineComponent({
     them(t) {
       if (t === "dark") t = "vs-dark";
       else if (t === "light") t = "vs";
+      else if (t === "transparent") {
+        document.styleSheets[0] &&
+          document.styleSheets[0].addRule("canvas", "opacity:0;");
+      }
       this.update({ theme: t });
     },
-    async loadTheme(name, src) {
+    async loadTheme(name, src, willUse) {
       await fetch(src)
         .then((data) => data.json())
         .then((data) => {
           monaco.editor.defineTheme(name, data);
+          if (willUse) this.them(name);
         });
       return this;
     },
@@ -331,6 +336,7 @@ export default defineComponent({
           },
         });
         that.generate();
+        that.loadTheme("transparent", "assets/transparent.json",1);
       });
     },
     generate() {
@@ -561,5 +567,9 @@ class bracketColorizer {
   border-style: ridge;
   border-width: 0px 0px 1px 0px;
   border-color: rgba(101, 142, 177, 1);
+}
+.lines-content.monaco-editor-background {
+  --monaco-bg: transparent;
+  background-color: var(--monaco-bg);
 }
 </style>
